@@ -11,6 +11,8 @@ REPO_API="https://api.github.com/repos/$GITHUB_REPOSITORY"
 TAGS_API="$REPO_API/releases/tags/$TAG"
 AUTH="Authorization: Bearer $TOKEN"
 
+echo "$TAGS_API"
+
 ID=$(curl -L -H "$AUTH" "$TAGS_API" | jq -r '.ID')
 
 if [ "$ID" = "null" ]; then
