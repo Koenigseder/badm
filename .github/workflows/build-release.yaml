@@ -43,9 +43,9 @@ jobs:
           printf "### :x: No new release was created for this PR\n\nIn order to create a release set a valid label:\n\n- Major release: \`$MAJOR_RELEASE_LABEL\`\n- Minor release: \`$MINOR_RELEASE_LABEL\`\n- Patch release: \`$PATCH_RELEASE_LABEL\`" >> "$GITHUB_STEP_SUMMARY"
 
   go-build:
+    name: Build BADM binary
     runs-on: ubuntu-latest
     needs: create-release
-    if: needs.create-release.outputs.new-release-tag != ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
