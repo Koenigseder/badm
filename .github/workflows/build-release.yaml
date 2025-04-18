@@ -13,6 +13,9 @@ jobs:
     name: Create new release
     runs-on: ubuntu-latest
 
+    outputs:
+      new-release-tag: ${{ steps.create-release.outputs.new-release-tag }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,19 +49,20 @@ jobs:
     name: Build BADM binary
     runs-on: ubuntu-latest
     needs: create-release
+    if: needs.create-release.outputs.new-release-tag != ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Go build
         env:
-          TAG: ${{ needs.create-release.outputs.new_release_tag }}
+          TAG: ${{ needs.create-release.outputs.new-release-tag }}
         shell: bash
         run: ./scripts/build.sh
 
       - name: Upload binary to release
         env:
-          TAG: ${{ needs.create-release.outputs.new_release_tag }}
+          TAG: ${{ needs.create-release.outputs.new-release-tag }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: ./scripts/release.sh
