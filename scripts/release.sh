@@ -13,7 +13,7 @@ AUTH="Authorization: Bearer $TOKEN"
 
 echo "$TAGS_API"
 
-ID=$(curl -L -H "$AUTH" "$TAGS_API" | jq -r '.ID')
+ID=$(curl -L -H "$AUTH" "$TAGS_API" | jq -r '.id')
 
 if [ "$ID" = "null" ]; then
 	echo "Release not found!"
