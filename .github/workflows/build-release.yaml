@@ -63,6 +63,6 @@ jobs:
       - name: Upload binary to release
         env:
           TAG: ${{ needs.create-release.outputs.new-release-tag }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.RELEASE_SECRET }}
         shell: bash
         run: ./scripts/release.sh
