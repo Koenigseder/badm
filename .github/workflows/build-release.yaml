@@ -19,7 +19,7 @@ jobs:
 
       - name: Create release
         id: create-release
-        uses: Koenigseder/semver-action@v1
+        uses: Koenigseder/semver-action@v1.0.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           base-branch: master
