@@ -27,21 +27,21 @@ to get going:
 
 ## Commands
 
-| Command      | Action                                                                                                                                                                          |
-|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `add`        | Add a Dotfile (or multiple) to your remote Dotfile repository. It gets replaced with a symlink. Choose the `--override` flag to override already existing files on your system. |
-| `rm`         | Remove a Dotfile (or multiple) from your remote Dotfile repository. The symlink gets replaced with the original file.                                                           |
-| `save`       | Write any changes to the local Dotfiles repository to the remote one. Needed after each change to local Dotfiles.                                                               |
-| `fetch`      | Manually fetch the current remote repository stage and persist remote changes onto the local system.                                                                            |
-| `new`        | Initialize a fresh local BADM repository, where new Dotfiles can be added afterwards.                                                                                           |
-| `get`        | Pull an already existing BADM remote repository and persist everything on the system.                                                                                           |
-| `help`       | Print helpful information.                                                                                                                                                      |
-| `version`    | Check your current version.                                                                                                                                                     |
-| `completion` | Generate the autocompletion script for the specified shell.                                                                                                                     |
+| Command      | Action                                                                                                                                                                                                                                  |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `add`        | Add a Dotfile (or multiple) to your remote Dotfile repository. It gets replaced with a symlink. Choose the `--override` flag to override already existing files on your system.                                                         |
+| `rm`         | Remove a Dotfile (or multiple) from your remote Dotfile repository. The symlink gets replaced with the original file.                                                                                                                   |
+| `save`       | Write any changes to the local Dotfiles repository to the remote one. Needed after each change to local Dotfiles.                                                                                                                       |
+| `fetch`      | Manually fetch the current remote repository stage and persist remote changes onto the local system. Choose the `--override` flag to override already existing files on your system.                                                    |
+| `new`        | Initialize a fresh local BADM repository, where new Dotfiles can be added afterwards.                                                                                                                                                   |
+| `get`        | Pull an already existing BADM remote repository and persist everything on the system.                                                                                                                                                   |
+| `reset`      | Reset all changes made by BADM. It replaces populated symlinks with the original Dotfiles. Choose this command if you do not want to use BADM anymore. Choose the `--dryRun` flag to see what would happen when executing this command. |
+| `help`       | Print helpful information.                                                                                                                                                                                                              |
+| `version`    | Check your current version.                                                                                                                                                                                                             |
+| `completion` | Generate the autocompletion script for the specified shell.                                                                                                                                                                             |
 
 ## Planned features / Known issues
 
 - Remove dead symlinks (file got remotely deleted)
-- Undo all BADM changes to the system
 - Execute custom scripts on wish (e.g. pacman, yay, ...)
 - Actual configuration features
