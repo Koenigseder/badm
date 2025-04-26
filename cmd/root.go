@@ -30,13 +30,18 @@ var (
 
 	// Flags
 	overrideExistingFiles bool
+	dryRun                bool
 
 	rootCmd = &cobra.Command{
 		Use:   "badm",
 		Short: "BADM is a Dotfile manager",
 		Long:  `BADM - Born Again Dotfile Manager`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("No argument provided!")
+			err := cmd.Help()
+			if err != nil {
+				fmt.Println("Unable to display help:", err)
+				os.Exit(1)
+			}
 		},
 	}
 )
