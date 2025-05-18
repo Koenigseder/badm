@@ -2,7 +2,7 @@
 
 BADM is a new (yes, again a new one) Dotfile manager. It uses Git as its backbone.
 
-:warning: This Dotfiles manager is still a **work in progress**, some features are not implemented right now. Have a
+This Dotfile manager is **ready to use**, but some features are not implemented yet. Have a
 look at [Planned features / Known issues](#planned-features--known-issues) to see what is planned to be added.
 
 ## Setup
@@ -25,6 +25,10 @@ to get going:
     3. `badm save` &rarr; Write any changes to the local Dotfiles repository to the remote one. Needed after each change
        to local Dotfiles.
 
+### Get an existing BADM repository
+
+`badm get <REMOTE_REPO_CLONE_URL>` - It's that easy.
+
 ## Commands
 
 | Command      | Action                                                                                                                                                                                                                                  |
@@ -42,6 +46,6 @@ to get going:
 
 ## Planned features / Known issues
 
+- Update command
 - Execute custom scripts on wish (e.g. pacman, yay, ...)
 - Actual configuration features
-- Update functionality
