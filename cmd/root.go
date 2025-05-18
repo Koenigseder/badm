@@ -57,7 +57,6 @@ func Execute() {
 
 	err := state.ReadStateFile(repoPath)
 	if err != nil {
-		fmt.Println(err)
 		fmt.Println("\033[33mWARNING: No state file found. Using empty one.\n\033[0m")
 		state.Name = "badm.state"
 	}

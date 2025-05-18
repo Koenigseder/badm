@@ -35,8 +35,6 @@ func createNewBadmRepo(args []string) {
 	_, err := os.Stat(repoPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Create directory if it does not exist
-		fmt.Printf("Creating %s directory...\n", repoPath)
-
 		err = os.Mkdir(repoPath, fs.ModePerm)
 		if err != nil {
 			fmt.Println("Unable creating directory:", err)
@@ -52,28 +50,43 @@ func createNewBadmRepo(args []string) {
 	_, err = os.Stat(cfgFile)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Create .badm.yaml if it does not exist
-		fmt.Println("Creating .badm.yaml file...")
-
-		_, err = os.Create(cfgFile)
+		file, err := os.Create(cfgFile)
 		if err != nil {
 			fmt.Println("Unable creating .badm.yaml config file:", err)
 			os.Exit(1)
 		}
+
+		defer file.Close()
 
 		fmt.Println("Created .badm.yaml")
 	} else {
 		fmt.Println("Config file .badm.yaml already exists")
 	}
 
-	fmt.Println("Setting up Git repository...")
+	// Check if .gitignore file exists in .dotfiles folder
+	gitignore := fmt.Sprintf("%s/%s", repoPath, ".gitignore")
+
+	_, err = os.Stat(gitignore)
+	if errors.Is(err, fs.ErrNotExist) {
+		// Create .gitignore if it does not exist
+		err = os.WriteFile(gitignore, []byte("badm.state"), 0644)
+		if err != nil {
+			fmt.Println("Unable creating .gitignore config file:", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Created .gitignore")
+	} else {
+		fmt.Println("Config file .gitignore already exists")
+	}
 
 	git.InitGitRepository(repoPath, remoteOrigin)
 
 	fmt.Printf("Set up Git repository with remote '%s'\n", remoteOrigin)
 
-	fmt.Println("Pushing .badm.yaml config file to remote...")
+	fmt.Println("Pushing config files to remote...")
 
-	git.CommitAndPushFiles(repoPath, "🚀 Add init .badm.yaml")
+	git.CommitAndPushFiles(repoPath, "🚀 Add initial config files")
 
-	fmt.Println("Pushed .badm.yaml config file to remote")
+	fmt.Println("Pushed config files to remote")
 }

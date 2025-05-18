@@ -26,7 +26,19 @@ var add = &cobra.Command{
 
 		if git.FetchAndUpdate(repoPath) {
 			fmt.Println("Persisting changes...")
-			filesystem.PersistDotfiles(repoPath, repoName, overrideExistingFiles)
+			persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, overrideExistingFiles)
+
+			// Append persisted files to state
+			state.LocalFiles = append(state.LocalFiles, persistedFiles...)
+
+			// Persist the state file
+			err := state.WriteStateFile(repoPath)
+			if err != nil {
+				fmt.Println("Unable writing state file:", err)
+				os.Exit(1)
+			}
+
+			removeDeadSymlinks()
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
