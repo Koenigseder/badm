@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Koenigseder/badm/internal/filesystem"
 	"github.com/spf13/cobra"
 )
 
@@ -32,6 +33,9 @@ var (
 	overrideExistingFiles bool
 	dryRun                bool
 
+	// BADM State
+	state filesystem.State
+
 	rootCmd = &cobra.Command{
 		Use:   "badm",
 		Short: "BADM is a Dotfile manager",
@@ -48,6 +52,15 @@ var (
 
 // Execute the app
 func Execute() {
+	// Initialize BADM state object
+	state = *new(filesystem.State)
+
+	err := state.ReadStateFile(repoPath)
+	if err != nil {
+		fmt.Println("\033[33mWARNING: No state file found. Using empty one.\n\033[0m")
+		state.Name = "badm.state"
+	}
+
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
