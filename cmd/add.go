@@ -75,10 +75,20 @@ func addDotfiles(args []string) {
 
 		// Move the Dotfile to the BADM repo and create symbolic link
 		filesystem.MoveFileWithSymLink(shortAbsoluteFilePath, fileRepoPath)
+
+		// Add new file to BADM state
+		state.LocalFiles = append(state.LocalFiles, shortAbsoluteFilePath)
 	}
 
 	// Add Dotfile to Git and push it
 	git.CommitAndPushFiles(repoPath, "🚀 Add new file")
+
+	// Persist the state file
+	err = state.WriteStateFile(repoPath)
+	if err != nil {
+		fmt.Println("Unable writing state file:", err)
+		os.Exit(1)
+	}
 
 	fmt.Println("Successfully added and pushed Dotfiles!")
 }

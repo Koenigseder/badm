@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"slices"
 	"strings"
 
 	"github.com/Koenigseder/badm/internal/filesystem"
@@ -80,10 +81,26 @@ func removeDotfiles(args []string) {
 			fmt.Println("Unable moving file:", err)
 			os.Exit(1)
 		}
+
+		// Find index of removed file in state
+		index := slices.Index(state.LocalFiles, shortAbsoluteFilePath)
+		if index == -1 {
+			continue // File was not found in state
+		}
+
+		// Remove file from BADM state
+		state.LocalFiles = append(state.LocalFiles[:index], state.LocalFiles[index+1:]...)
 	}
 
 	// Remove Dotfiles from Git and push it
 	git.CommitAndPushFiles(repoPath, "💥 Remove file")
 
-	fmt.Printf("Successfully removed and pushed Dotfiles!")
+	// Persist the state file
+	err = state.WriteStateFile(repoPath)
+	if err != nil {
+		fmt.Println("Unable writing state file:", err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Successfully removed and pushed Dotfiles!")
 }
