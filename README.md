@@ -42,6 +42,6 @@ to get going:
 
 ## Planned features / Known issues
 
-- Remove dead symlinks (file got remotely deleted)
 - Execute custom scripts on wish (e.g. pacman, yay, ...)
 - Actual configuration features
+- Update functionality
