@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	repoName = ".dotfiles_badm"
+	repoName = ".dotfiles"
 
 	var err error
 
