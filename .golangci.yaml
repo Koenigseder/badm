@@ -1,0 +1,62 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: none
+  enable:
+    - asciicheck
+    - dupl
+    - errcheck
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - mnd
+    - nakedret
+    - nestif
+    - prealloc
+    - revive
+    - rowserrcheck
+    - staticcheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+    - wsl
+  settings:
+    gocognit:
+      min-complexity: 35
+    nestif:
+      min-complexity: 15
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
