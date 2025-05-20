@@ -15,7 +15,7 @@ var save = &cobra.Command{
 	Use:   "save",
 	Short: "Save the current Dotfiles state",
 	Long:  `Save the current Dotfiles state to the remote Git repository`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Println("Saving current Dotfiles state to remote Git repository...")
 
 		git.CommitAndPushFiles(repoPath, "💾 Save files")

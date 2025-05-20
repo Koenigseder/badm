@@ -21,7 +21,7 @@ var fetch = &cobra.Command{
 	Use:   "fetch",
 	Short: "Fetch a Git repository's status",
 	Long:  `Fetch a Git repository's status and persist Dotfiles on the system`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		git.FetchAndUpdate(repoPath)
 		persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, overrideExistingFiles)
 

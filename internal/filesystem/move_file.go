@@ -11,6 +11,7 @@ import (
 func MoveFileWithSymLink(sourcePath, destinationPath string) {
 	// Create directories if necessary
 	dirPath, _ := path.Split(destinationPath)
+
 	err := os.MkdirAll(dirPath, fs.ModePerm)
 	if err != nil {
 		fmt.Println("Unable creating needed directories:", err)

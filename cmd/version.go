@@ -24,7 +24,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number",
 	Long:  `All software has versions. This is BADM's`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Printf("BADM - Born Again Dotfile Manager\n Version: %s - Revision: %s\n", version, revision)
 	},
 }
@@ -34,9 +34,9 @@ func checkRemoteVersion() {
 		TagName string `json:"tag_name"`
 	}
 
-	badmLatestReleaseUrl := "https://api.github.com/repos/Koenigseder/badm/releases/latest"
+	badmLatestReleaseURL := "https://api.github.com/repos/Koenigseder/badm/releases/latest"
 
-	res, err := http.Get(badmLatestReleaseUrl)
+	res, err := http.Get(badmLatestReleaseURL)
 	if err != nil {
 		fmt.Println("Unable getting latest release:", err)
 		return
@@ -65,13 +65,15 @@ func formatString(latestReleaseTag string) {
 	newVersionText := fmt.Sprintf("A new version is available! (%s)", latestReleaseTag)
 	downloadText := fmt.Sprintf("     Download at https://github.com/Koenigseder/badm/releases/tag/%s", latestReleaseTag)
 
-	sharpLength := len(downloadText) + 2*3 // Length of header and trailer
+	// Length of header and trailer
+	sharpLength := len(downloadText) + 2*3 //nolint:mnd
 
 	fmt.Println("\033[33m")
 
 	for j := 0; j < sharpLength; j++ {
 		fmt.Printf("#")
 	}
+
 	fmt.Println()
 
 	for i := 0; i < len(newVersionText)/2; i++ {
@@ -84,5 +86,6 @@ func formatString(latestReleaseTag string) {
 	for j := 0; j < sharpLength; j++ {
 		fmt.Printf("#")
 	}
+
 	fmt.Println("\n\033[0m")
 }

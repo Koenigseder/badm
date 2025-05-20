@@ -40,7 +40,7 @@ var (
 		Use:   "badm",
 		Short: "BADM is a Dotfile manager",
 		Long:  `BADM - Born Again Dotfile Manager`,
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, _ []string) {
 			err := cmd.Help()
 			if err != nil {
 				fmt.Println("Unable to display help:", err)
@@ -53,11 +53,12 @@ var (
 // Execute the app
 func Execute() {
 	// Initialize BADM state object
-	state = *new(filesystem.State)
+	state = filesystem.State{}
 
 	err := state.ReadStateFile(repoPath)
 	if err != nil {
 		fmt.Println("\033[33mWARNING: No state file found. Using empty one.\n\033[0m")
+
 		state.Name = "badm.state"
 	}
 

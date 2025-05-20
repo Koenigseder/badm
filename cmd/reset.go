@@ -14,7 +14,7 @@ var reset = &cobra.Command{
 	Use:   "reset",
 	Short: "Repopulate all original Dotfiles on the system",
 	Long:  `Undo any changes made to the system by BADM. Removes symlinks and repopulates all original Dotfiles on the system`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		filesystem.RestoreDotfiles(repoPath, repoName, dryRun)
 	},
 }

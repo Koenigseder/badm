@@ -11,9 +11,9 @@ import (
 
 // RestoreDotfiles copies all original Dotfiles to the system and removes symlinks
 func RestoreDotfiles(baseDir, repoName string, dryRun bool) {
-	err := filepath.WalkDir(baseDir, func(dotfilesPath string, d fs.DirEntry, err error) error {
-		// Skip directories, .git folder and .badm.yaml
-		if d.IsDir() || strings.Contains(dotfilesPath, ".git") || strings.HasSuffix(dotfilesPath, ".badm.yaml") {
+	err := filepath.WalkDir(baseDir, func(dotfilesPath string, d fs.DirEntry, _ error) error {
+		// Skip directories, .git folder, .badm.yaml and badm.state
+		if d.IsDir() || strings.Contains(dotfilesPath, ".git") || strings.HasSuffix(dotfilesPath, ".badm.yaml") || strings.HasSuffix(dotfilesPath, "badm.state") {
 			return nil
 		}
 
@@ -21,7 +21,7 @@ func RestoreDotfiles(baseDir, repoName string, dryRun bool) {
 		destinationPath := filepath.Clean(strings.Replace(dotfilesPath, repoName, "", 1))
 
 		// Check if file exists
-		if _, err = os.Stat(destinationPath); err == nil {
+		if _, err := os.Stat(destinationPath); err == nil {
 			// Check if file should not be restored but output (Dry Run)
 			if dryRun {
 				fmt.Println("Restored file", destinationPath, "(DRY)")

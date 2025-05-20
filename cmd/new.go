@@ -18,7 +18,7 @@ var newCmd = &cobra.Command{
 	Use:   "new",
 	Short: "Create a new BADM repo",
 	Long:  `Create a new BADM repo to manage your Dotfiles`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		createNewBadmRepo(args)
 	},
 }
@@ -69,10 +69,10 @@ func createNewBadmRepo(args []string) {
 	_, err = os.Stat(gitignore)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Create .gitignore if it does not exist
-		err = os.WriteFile(gitignore, []byte("badm.state"), 0644)
+		err = os.WriteFile(gitignore, []byte("badm.state"), 0600) //nolint:mnd
 		if err != nil {
 			fmt.Println("Unable creating .gitignore config file:", err)
-			os.Exit(1)
+			os.Exit(1) //nolint:gocritic
 		}
 
 		fmt.Println("Created .gitignore")
