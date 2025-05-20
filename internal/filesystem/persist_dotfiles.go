@@ -14,7 +14,7 @@ import (
 func PersistDotfiles(baseDir, repoName string, overrideExistingFiles bool) []string {
 	writtenFiles := new([]string)
 
-	err := filepath.WalkDir(baseDir, func(dotfilesPath string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(baseDir, func(dotfilesPath string, d fs.DirEntry, _ error) error {
 		// Skip directories, .git folder, badm.state and .badm.yaml
 		if d.IsDir() || strings.Contains(dotfilesPath, ".git") || strings.HasSuffix(dotfilesPath, ".badm.yaml") || strings.HasSuffix(dotfilesPath, "badm.state") {
 			return nil
@@ -25,7 +25,8 @@ func PersistDotfiles(baseDir, repoName string, overrideExistingFiles bool) []str
 
 		// Create directories if necessary
 		dirPath, _ := path.Split(destinationPath)
-		err = os.MkdirAll(dirPath, fs.ModePerm)
+
+		err := os.MkdirAll(dirPath, fs.ModePerm)
 		if err != nil {
 			fmt.Println("Unable creating needed directories:", err)
 			os.Exit(1)

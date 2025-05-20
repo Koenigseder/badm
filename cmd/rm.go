@@ -20,7 +20,7 @@ var rm = &cobra.Command{
 	Use:   "rm",
 	Short: "Remove a file (or files) from your Dotfiles",
 	Long:  `Remove a file (or files) from your Dotfiles. The file does not get deleted, it gets placed at the original location`,
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PreRun: func(_ *cobra.Command, _ []string) {
 		// Fetch Git remote status and persist all Dotfiles to the system using symlinks
 		fmt.Println("Fetching remote status...")
 
@@ -41,7 +41,7 @@ var rm = &cobra.Command{
 			removeDeadSymlinks()
 		}
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		removeDotfiles(args)
 	},
 }

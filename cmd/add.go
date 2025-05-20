@@ -20,7 +20,7 @@ var add = &cobra.Command{
 	Use:   "add",
 	Short: "Add a file (or files) to your Dotfiles",
 	Long:  `Add a file (or files) to your Dotfiles. Those files get automatically pushed to your Git repository`,
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PreRun: func(_ *cobra.Command, _ []string) {
 		// Fetch Git remote status and persist all Dotfiles to the system using symlinks
 		fmt.Println("Fetching remote status...")
 
@@ -41,7 +41,7 @@ var add = &cobra.Command{
 			removeDeadSymlinks()
 		}
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		addDotfiles(args)
 	},
 }

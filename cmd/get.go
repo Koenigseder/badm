@@ -18,15 +18,15 @@ var get = &cobra.Command{
 	Use:   "get",
 	Short: "Get a Git repository to use with BADM",
 	Long:  `Get a Git repository full of Dotfiles and persist those on the system`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		if len(args) == 0 {
 			fmt.Println("Please provide a Git remote URL")
 			os.Exit(1)
 		}
 
-		repoUrl := args[0]
+		repoURL := args[0]
 
-		git.CloneGitRepository(repoUrl, repoPath)
+		git.CloneGitRepository(repoURL, repoPath)
 		persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, overrideExistingFiles)
 
 		// Append persisted files to state

@@ -21,7 +21,7 @@ func (s *State) WriteStateFile(repoBasePath string) error {
 
 	stateFilePath := fmt.Sprintf("%s/%s", repoBasePath, s.Name)
 
-	err = os.WriteFile(stateFilePath, jsonString, 0644)
+	err = os.WriteFile(stateFilePath, jsonString, 0600) //nolint:mnd
 	if err != nil {
 		return err
 	}
