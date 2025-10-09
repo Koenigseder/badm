@@ -1,11 +1,10 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
+	"strings"
 
+	"github.com/Koenigseder/badm/internal/core"
 	"github.com/spf13/cobra"
 	"golang.org/x/mod/semver"
 )
@@ -30,62 +29,60 @@ var versionCmd = &cobra.Command{
 }
 
 func checkRemoteVersion() {
-	type latestReleaseResponse struct {
-		TagName string `json:"tag_name"`
-	}
-
-	badmLatestReleaseURL := "https://api.github.com/repos/Koenigseder/badm/releases/latest"
-
-	res, err := http.Get(badmLatestReleaseURL)
+	latestReleaseInformation, err := core.GetLatestReleaseInformation()
 	if err != nil {
-		fmt.Println("Unable getting latest release:", err)
+		fmt.Println("Unable getting latest release information:", err)
 		return
 	}
 
-	resBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println("Unable reading release API response:", err)
-		return
-	}
-
-	latestReleaseRes := new(latestReleaseResponse)
-
-	err = json.Unmarshal(resBody, &latestReleaseRes)
-	if err != nil {
-		fmt.Println("Unable parsing release API response to JSON:", err)
-		return
-	}
-
-	if semver.Compare(version, latestReleaseRes.TagName) == -1 {
-		formatString(latestReleaseRes.TagName)
+	if semver.Compare(version, latestReleaseInformation.TagName) == -1 {
+		formatString(latestReleaseInformation.TagName)
 	}
 }
 
 func formatString(latestReleaseTag string) {
 	newVersionText := fmt.Sprintf("A new version is available! (%s)", latestReleaseTag)
-	downloadText := fmt.Sprintf("     Download at https://github.com/Koenigseder/badm/releases/tag/%s", latestReleaseTag)
+	downloadText := fmt.Sprintf("   Update with \033[1m\033[32mbadm update\033[0m\033[33m or download at \033[1m\033[32mhttps://github.com/Koenigseder/badm/releases/tag/%s\033[0m\033[33m", latestReleaseTag)
+
+	visibleNewVersionLength := visibleLength(newVersionText)
+	visibleDownloadLength := visibleLength(downloadText)
 
 	// Length of header and trailer
-	sharpLength := len(downloadText) + 2*3 //nolint:mnd
+	frameLength := visibleDownloadLength + 3 //nolint:mnd
 
-	fmt.Println("\033[33m")
+	frame := strings.Repeat("#", frameLength)
 
-	for j := 0; j < sharpLength; j++ {
-		fmt.Printf("#")
+	centeredNewVersion := fmt.Sprintf("%[1]*s", -frameLength, fmt.Sprintf("%[1]*s", (frameLength+visibleNewVersionLength)/2, newVersionText))
+	centeredDownload := fmt.Sprintf("%[1]*s", -frameLength, fmt.Sprintf("%[1]*s", (frameLength+visibleDownloadLength)/2, downloadText))
+
+	fmt.Println("\033[33m" + frame)
+	fmt.Println(centeredNewVersion)
+	fmt.Println(centeredDownload)
+	fmt.Println(frame + "\033[0m")
+}
+
+func visibleLength(s string) int {
+	// ANSI-Escape-Sequences start with '\033[' oder '\x1b['
+	// We only count the visible characters
+	length := 0
+	inEscape := false
+
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\033' || s[i] == '\x1b' {
+			inEscape = true
+			continue
+		}
+
+		if inEscape {
+			if s[i] >= 'A' && s[i] <= 'Z' || s[i] == 'm' {
+				inEscape = false
+			}
+
+			continue
+		}
+
+		length++
 	}
 
-	fmt.Println()
-
-	for i := 0; i < len(newVersionText)/2; i++ {
-		fmt.Printf(" ")
-	}
-
-	fmt.Println(newVersionText)
-	fmt.Println(downloadText)
-
-	for j := 0; j < sharpLength; j++ {
-		fmt.Printf("#")
-	}
-
-	fmt.Println("\n\033[0m")
+	return length
 }
