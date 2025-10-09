@@ -53,7 +53,7 @@ func formatString(latestReleaseTag string) {
 	frame := strings.Repeat("#", frameLength)
 
 	centeredNewVersion := fmt.Sprintf("%[1]*s", -frameLength, fmt.Sprintf("%[1]*s", (frameLength+visibleNewVersionLength)/2, newVersionText)) //nolint:mnd
-	centeredDownload := fmt.Sprintf("%[1]*s", -frameLength, fmt.Sprintf("%[1]*s", (frameLength+visibleDownloadLength)/2, downloadText))       //noling:mnd
+	centeredDownload := fmt.Sprintf("%[1]*s", -frameLength, fmt.Sprintf("%[1]*s", (frameLength+visibleDownloadLength)/2, downloadText))       //nolint:mnd
 
 	fmt.Println("\033[33m" + frame)
 	fmt.Println(centeredNewVersion)

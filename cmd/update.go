@@ -159,9 +159,9 @@ func extractTarGz(archivePath, targetDir string) error {
 
 			defer outFile.Close()
 
-			if _, err = io.Copy(outFile, tarReader); err != nil {
+			if _, err = io.Copy(outFile, tarReader); err != nil { //nolint:gosec
 				return err
-			} //nolint:gosec
+			}
 		}
 	}
 
