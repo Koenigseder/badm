@@ -16,7 +16,10 @@ func PersistDotfiles(baseDir, repoName string, overrideExistingFiles bool) []str
 
 	err := filepath.WalkDir(baseDir, func(dotfilesPath string, d fs.DirEntry, _ error) error {
 		// Skip directories, .git folder, badm.state and .badm.yaml
-		if d.IsDir() || strings.Contains(dotfilesPath, ".git") || strings.HasSuffix(dotfilesPath, ".badm.yaml") || strings.HasSuffix(dotfilesPath, "badm.state") {
+		if d.IsDir() ||
+			(strings.Contains(dotfilesPath, ".git") && !strings.HasSuffix(dotfilesPath, ".gitconfig")) ||
+			strings.HasSuffix(dotfilesPath, ".badm.yaml") ||
+			strings.HasSuffix(dotfilesPath, "badm.state") {
 			return nil
 		}
 
