@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v8
+        uses: golangci/golangci-lint-action@v9
         with:
           skip-cache: true
           args: --config=.golangci.yaml --verbose
