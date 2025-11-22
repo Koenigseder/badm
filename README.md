@@ -47,6 +47,5 @@ to get going:
 
 ## Planned features / Known issues
 
-- Update command
 - Execute custom scripts on wish (e.g. pacman, yay, ...)
 - Actual configuration features

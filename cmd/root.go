@@ -8,33 +8,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	repoName = ".dotfiles"
-
-	var err error
-
-	homeDir, err = os.UserHomeDir()
-	if err != nil {
-		fmt.Println("Error retrieving user's home directory:", err)
-		os.Exit(1)
-	}
-
-	repoPath = fmt.Sprintf("%s/%s", homeDir, repoName)
-	cfgFile = fmt.Sprintf("%s/.badm.yaml", repoPath)
-}
-
 var (
-	repoName string
-	homeDir  string
-	repoPath string
-	cfgFile  string
+	repoName      string
+	homeDir       string
+	repoPath      string
+	repoRootAlias string
+	cfgFile       string
 
 	// Flags
 	overrideExistingFiles bool
 	dryRun                bool
 
 	// BADM State
-	state filesystem.State
+	state *filesystem.State
 
 	rootCmd = &cobra.Command{
 		Use:   "badm",
@@ -50,10 +36,26 @@ var (
 	}
 )
 
+func init() {
+	repoName = ".dotfiles"
+	repoRootAlias = "%root%"
+
+	var err error
+
+	homeDir, err = os.UserHomeDir()
+	if err != nil {
+		fmt.Println("Error retrieving user's home directory:", err)
+		os.Exit(1)
+	}
+
+	repoPath = fmt.Sprintf("%s/%s", homeDir, repoName)
+	cfgFile = fmt.Sprintf("%s/.badm.yaml", repoPath)
+}
+
 // Execute the app
 func Execute() {
 	// Initialize BADM state object
-	state = filesystem.State{}
+	state = new(filesystem.State)
 
 	err := state.ReadStateFile(repoPath)
 	if err != nil {

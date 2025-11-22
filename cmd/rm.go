@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"slices"
 	"strings"
@@ -26,7 +27,7 @@ var rm = &cobra.Command{
 
 		if git.FetchAndUpdate(repoPath) {
 			fmt.Println("Persisting changes...")
-			persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, overrideExistingFiles)
+			persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, repoRootAlias, overrideExistingFiles)
 
 			// Append persisted files to state
 			state.LocalFiles = append(state.LocalFiles, persistedFiles...)
@@ -75,20 +76,36 @@ func removeDotfiles(args []string) {
 		// Clean path
 		shortAbsoluteFilePath := path.Clean(longFilePath)
 
-		// Intercept BADM repo path to get the file from there
-		fileRepoPath := path.Join(repoPath, strings.Replace(shortAbsoluteFilePath, homeDir, "", 1))
+		var (
+			fileRepoPath string
+			rmCmd        *exec.Cmd
+			mvCmd        *exec.Cmd
+		)
+
+		if strings.HasPrefix(shortAbsoluteFilePath, homeDir) {
+			// Intercept BADM repo path to remove the file from there
+			fileRepoPath = path.Join(repoPath, strings.Replace(shortAbsoluteFilePath, homeDir, "", 1))
+
+			rmCmd = exec.Command("rm", shortAbsoluteFilePath)
+			mvCmd = exec.Command("mv", fileRepoPath, shortAbsoluteFilePath)
+		} else {
+			fileRepoPath = path.Join(repoPath, repoRootAlias, shortAbsoluteFilePath)
+
+			rmCmd = exec.Command("sudo", "rm", shortAbsoluteFilePath)
+			mvCmd = exec.Command("sudo", "mv", fileRepoPath, shortAbsoluteFilePath)
+		}
 
 		fmt.Printf("Removing %s from Dotfiles...\n", relativeFilePath)
 
 		// Remove soft symbolic link
-		err = os.Remove(shortAbsoluteFilePath)
+		err = rmCmd.Run()
 		if err != nil {
 			fmt.Printf("Unable removing soft symbolic link at %s: %s\n", shortAbsoluteFilePath, err)
 			os.Exit(1)
 		}
 
 		// Move file
-		err = os.Rename(fileRepoPath, shortAbsoluteFilePath)
+		err = mvCmd.Run()
 		if err != nil {
 			fmt.Println("Unable moving file:", err)
 			os.Exit(1)

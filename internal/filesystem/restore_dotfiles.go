@@ -2,23 +2,43 @@ package filesystem
 
 import (
 	"fmt"
-	"io"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
 
 // RestoreDotfiles copies all original Dotfiles to the system and removes symlinks
-func RestoreDotfiles(baseDir, repoName string, dryRun bool) {
+func RestoreDotfiles(baseDir, repoName, repoRootAlias string, dryRun bool) {
 	err := filepath.WalkDir(baseDir, func(dotfilesPath string, d fs.DirEntry, _ error) error {
 		// Skip directories, .git folder, .badm.yaml and badm.state
-		if d.IsDir() || strings.Contains(dotfilesPath, ".git") || strings.HasSuffix(dotfilesPath, ".badm.yaml") || strings.HasSuffix(dotfilesPath, "badm.state") {
+		if d.IsDir() ||
+			(strings.Contains(dotfilesPath, ".git") && !strings.HasSuffix(dotfilesPath, ".gitconfig")) ||
+			strings.HasSuffix(dotfilesPath, ".badm.yaml") ||
+			strings.HasSuffix(dotfilesPath, "badm.state") {
 			return nil
 		}
 
+		var (
+			destinationPath string
+			rmCmd           *exec.Cmd
+			cpCmd           *exec.Cmd
+		)
+
 		// Remove Dotfiles repo name from path
-		destinationPath := filepath.Clean(strings.Replace(dotfilesPath, repoName, "", 1))
+		if strings.Contains(dotfilesPath, repoRootAlias) {
+			stringToRemove := baseDir + "/" + repoRootAlias
+			destinationPath = filepath.Clean(strings.Replace(dotfilesPath, stringToRemove, "", 1))
+
+			rmCmd = exec.Command("sudo", "rm", destinationPath)
+			cpCmd = exec.Command("sudo", "cp", dotfilesPath, destinationPath)
+		} else {
+			destinationPath = filepath.Clean(strings.Replace(dotfilesPath, repoName, "", 1))
+
+			rmCmd = exec.Command("rm", destinationPath)
+			cpCmd = exec.Command("cp", dotfilesPath, destinationPath)
+		}
 
 		// Check if file exists
 		if _, err := os.Stat(destinationPath); err == nil {
@@ -30,28 +50,14 @@ func RestoreDotfiles(baseDir, repoName string, dryRun bool) {
 			}
 
 			// Remove symlink
-			err = os.Remove(destinationPath)
+			err = rmCmd.Run()
 			if err != nil {
 				fmt.Printf("Unable removing symlink %s: %v\n", destinationPath, err)
 				os.Exit(1)
 			}
 
 			// Copy file
-			srcFile, err := os.Open(dotfilesPath)
-			if err != nil {
-				fmt.Printf("Unable opening file %s: %v\n", dotfilesPath, err)
-				os.Exit(1)
-			}
-			defer srcFile.Close()
-
-			destFile, err := os.Create(destinationPath)
-			if err != nil {
-				fmt.Printf("Unable creating file %s: %v\n", destinationPath, err)
-				os.Exit(1)
-			}
-			defer destFile.Close()
-
-			_, err = io.Copy(destFile, srcFile)
+			err = cpCmd.Run()
 			if err != nil {
 				fmt.Printf("Unable copying file %s: %v\n", dotfilesPath, err)
 				os.Exit(1)

@@ -26,7 +26,7 @@ var add = &cobra.Command{
 
 		if git.FetchAndUpdate(repoPath) {
 			fmt.Println("Persisting changes...")
-			persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, overrideExistingFiles)
+			persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, repoRootAlias, overrideExistingFiles)
 
 			// Append persisted files to state
 			state.LocalFiles = append(state.LocalFiles, persistedFiles...)
@@ -75,8 +75,19 @@ func addDotfiles(args []string) {
 		// Clean path
 		shortAbsoluteFilePath := path.Clean(longFilePath)
 
-		// Intercept BADM repo path to save the file there
-		fileRepoPath := path.Join(repoPath, strings.Replace(shortAbsoluteFilePath, homeDir, "", 1))
+		var (
+			fileRepoPath string
+			withSudo     bool
+		)
+
+		if strings.HasPrefix(shortAbsoluteFilePath, homeDir) {
+			// Intercept BADM repo path to save the file there
+			fileRepoPath = path.Join(repoPath, strings.Replace(shortAbsoluteFilePath, homeDir, "", 1))
+			withSudo = false
+		} else {
+			fileRepoPath = path.Join(repoPath, repoRootAlias, shortAbsoluteFilePath)
+			withSudo = true
+		}
 
 		if info, _ := os.Lstat(shortAbsoluteFilePath); info.Mode().Type() == os.ModeSymlink {
 			fmt.Println(shortAbsoluteFilePath, "is a symlink and cannot be added to the Dotfiles")
@@ -86,7 +97,7 @@ func addDotfiles(args []string) {
 		fmt.Printf("Adding %s to Dotfiles...\n", relativeFilePath)
 
 		// Move the Dotfile to the BADM repo and create symbolic link
-		filesystem.MoveFileWithSymLink(shortAbsoluteFilePath, fileRepoPath)
+		filesystem.MoveFileWithSymLink(shortAbsoluteFilePath, fileRepoPath, withSudo)
 
 		// Add new file to BADM state
 		state.LocalFiles = append(state.LocalFiles, shortAbsoluteFilePath)
