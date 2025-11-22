@@ -27,7 +27,7 @@ var get = &cobra.Command{
 		repoURL := args[0]
 
 		git.CloneGitRepository(repoURL, repoPath)
-		persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, overrideExistingFiles)
+		persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, repoRootAlias, overrideExistingFiles)
 
 		// Append persisted files to state
 		state.LocalFiles = append(state.LocalFiles, persistedFiles...)

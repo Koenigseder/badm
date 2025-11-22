@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -11,7 +12,7 @@ import (
 
 // PersistDotfiles reads all Dotfiles and creates symlinks for everyone on the system
 // returns a string slice with all persisted files
-func PersistDotfiles(baseDir, repoName string, overrideExistingFiles bool) []string {
+func PersistDotfiles(baseDir, repoName, repoRootAlias string, overrideExistingFiles bool) []string {
 	writtenFiles := new([]string)
 
 	err := filepath.WalkDir(baseDir, func(dotfilesPath string, d fs.DirEntry, _ error) error {
@@ -23,13 +24,33 @@ func PersistDotfiles(baseDir, repoName string, overrideExistingFiles bool) []str
 			return nil
 		}
 
-		// Remove Dotfiles repo name from path
-		destinationPath := filepath.Clean(strings.Replace(dotfilesPath, repoName, "", 1))
+		var (
+			destinationPath string
+			mkdirCmd        *exec.Cmd
+			rmCmd           *exec.Cmd
+			lnCmd           *exec.Cmd
+		)
+
+		if strings.Contains(dotfilesPath, repoRootAlias) {
+			// Remove Dotfiles repo path and `repoRootAlias` from path
+			destinationPath = filepath.Clean(strings.Replace(dotfilesPath, baseDir+"/"+repoRootAlias, "", 1))
+			dirPath, _ := path.Split(destinationPath)
+
+			mkdirCmd = exec.Command("sudo", "mkdir", "-p", dirPath)
+			rmCmd = exec.Command("sudo", "rm", destinationPath)
+			lnCmd = exec.Command("sudo", "ln", "-s", dotfilesPath, destinationPath)
+		} else {
+			// Remove Dotfiles repo name from path
+			destinationPath = filepath.Clean(strings.Replace(dotfilesPath, repoName, "", 1))
+			dirPath, _ := path.Split(destinationPath)
+
+			mkdirCmd = exec.Command("mkdir", "-p", dirPath)
+			rmCmd = exec.Command("rm", destinationPath)
+			lnCmd = exec.Command("ln", "-s", dotfilesPath, destinationPath)
+		}
 
 		// Create directories if necessary
-		dirPath, _ := path.Split(destinationPath)
-
-		err := os.MkdirAll(dirPath, fs.ModePerm)
+		err := mkdirCmd.Run()
 		if err != nil {
 			fmt.Println("Unable creating needed directories:", err)
 			os.Exit(1)
@@ -45,7 +66,7 @@ func PersistDotfiles(baseDir, repoName string, overrideExistingFiles bool) []str
 			}
 
 			// Override file
-			err = os.Remove(destinationPath)
+			err = rmCmd.Run()
 			if err != nil {
 				fmt.Printf("Unable deleting existing file %s: %v\n", destinationPath, err)
 				os.Exit(1)
@@ -55,7 +76,7 @@ func PersistDotfiles(baseDir, repoName string, overrideExistingFiles bool) []str
 		}
 
 		// Create soft symbolic link
-		err = os.Symlink(dotfilesPath, destinationPath)
+		err = lnCmd.Run()
 		if err != nil {
 			fmt.Println("Unable creating symbolic link:", err)
 			os.Exit(1)

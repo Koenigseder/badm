@@ -23,7 +23,7 @@ var fetch = &cobra.Command{
 	Long:  `Fetch a Git repository's status and persist Dotfiles on the system`,
 	Run: func(_ *cobra.Command, _ []string) {
 		git.FetchAndUpdate(repoPath)
-		persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, overrideExistingFiles)
+		persistedFiles := filesystem.PersistDotfiles(repoPath, repoName, repoRootAlias, overrideExistingFiles)
 
 		// Append persisted files to state
 		state.LocalFiles = append(state.LocalFiles, persistedFiles...)
