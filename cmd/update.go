@@ -8,7 +8,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/Koenigseder/badm/internal/core"
 	"github.com/spf13/cobra"
@@ -28,6 +30,8 @@ var updateCmd = &cobra.Command{
 			fmt.Println("Error updating BADM:", err)
 			os.Exit(1)
 		}
+
+		fmt.Println("Successfully updated BADM")
 	},
 }
 
@@ -69,7 +73,15 @@ func update() error {
 	}
 
 	newBinaryPath := filepath.Join(tempDir, "badm")
-	if err = os.Rename(newBinaryPath, oldPath); err != nil {
+
+	mvCmd := exec.Command("mv", newBinaryPath, oldPath)
+
+	if !strings.Contains(oldPath, homeDir) {
+		mvCmd = exec.Command("sudo", "mv", newBinaryPath, oldPath)
+	}
+
+	err = mvCmd.Run()
+	if err != nil {
 		return fmt.Errorf("error replacing binary: %v", err)
 	}
 
