@@ -46,23 +46,6 @@ func createNewBadmRepo(args []string) {
 		fmt.Printf("Directory %s already exists\n", repoPath)
 	}
 
-	// Check if .badm.yaml file exists in .dotfiles folder
-	_, err = os.Stat(cfgFile)
-	if errors.Is(err, fs.ErrNotExist) {
-		// Create .badm.yaml if it does not exist
-		file, err := os.Create(cfgFile)
-		if err != nil {
-			fmt.Println("Unable creating .badm.yaml config file:", err)
-			os.Exit(1)
-		}
-
-		defer file.Close()
-
-		fmt.Println("Created .badm.yaml")
-	} else {
-		fmt.Println("Config file .badm.yaml already exists")
-	}
-
 	// Check if .gitignore file exists in .dotfiles folder
 	gitignore := fmt.Sprintf("%s/%s", repoPath, ".gitignore")
 

@@ -13,7 +13,7 @@ var (
 	homeDir       string
 	repoPath      string
 	repoRootAlias string
-	cfgFile       string
+	cfgFilePath   string
 
 	// Flags
 	overrideExistingFiles bool
@@ -49,7 +49,7 @@ func init() {
 	}
 
 	repoPath = fmt.Sprintf("%s/%s", homeDir, repoName)
-	cfgFile = fmt.Sprintf("%s/.badm.yaml", repoPath)
+	cfgFilePath = fmt.Sprintf("%s/.badm.yaml", repoPath)
 }
 
 // Execute the app
