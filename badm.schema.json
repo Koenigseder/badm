@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/Koenigseder/badm/blob/master/badm.schema.json",
+  "title": "BADM Packages Configuration Schema",
+  "description": "Schema for the BADM packages configuration file.",
+  "type": "object",
+  "required": [
+    "packages"
+  ],
+  "properties": {
+    "packages": {
+      "type": "object",
+      "description": "Defines package managers, installation scopes, and packages to install.",
+      "required": [
+        "packageManagers",
+        "installScopes"
+      ],
+      "properties": {
+        "packageManagers": {
+          "type": "object",
+          "description": "A map of package managers and their installation commands.",
+          "additionalProperties": {
+            "type": "string",
+            "description": "The command used to install packages with this package manager."
+          }
+        },
+        "installScopes": {
+          "type": "object",
+          "description": "Defines installation variations (e.g., 'basics', 'slim', 'full').",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Definition of an installation scope.",
+            "properties": {
+              "dependsOn": {
+                "type": "string",
+                "description": "Name of another installation scope that this scope depends on."
+              },
+              "packages": {
+                "type": "object",
+                "description": "List of packages to install using the defined package managers.",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "Name of the package to install."
+                  }
+                }
+              },
+              "scripts": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "Name of a script to execute after package installation."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "scripts": {
+      "type": "object",
+      "description": "Defines scripts that can be referenced in installation scopes.",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Definition of a script.",
+        "required": [
+          "exec",
+          "shell"
+        ],
+        "properties": {
+          "exec": {
+            "type": "string",
+            "description": "The command or script to execute (can be multi-line)."
+          },
+          "shell": {
+            "type": "string",
+            "description": "The shell in which the script will be executed (e.g., 'bash')."
+          }
+        }
+      }
+    }
+  }
+}

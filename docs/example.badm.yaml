@@ -1,0 +1,111 @@
+# e.g. `badm packages <installScopeName>`
+packages:
+  # Define package managers with respective commands
+  packageManagers:
+    pacman: sudo pacman -S --needed
+    yay: yay -S --needed
+    flatpak-flathub: flatpak install flathub
+
+  # Define installation variations - dependencies can be included
+  installScopes:
+    # The very basics
+    basics: # Name of variation
+      packages: # Which packages should be installed
+        pacman: # Which package manager to use (name of `packageManagers`) - order is respected
+          - git # Name of package
+          - base-devel
+          - bluez
+          - bluez-utils
+      # Additionally we execute scripts after package installation
+      scripts:
+        - setup-bluetooth
+
+    # Slim installation
+    slim:
+      dependsOn: basics
+      packages:
+        pacman:
+          - alacritty
+          - zed
+          - starship
+          - okular
+          - spectacle
+          - discover
+          - rofi
+        yay:
+          - brave-bin
+
+    # Almost full installation
+    full:
+      dependsOn: slim # This variation depends on `slim` - `slim` gets executed first
+      packages:
+        pacman:
+          - go
+          - keepassxc
+          - signal-desktop
+          - podman
+          - flatpak
+          - discover
+        yay:
+          - intellij-idea-ultimate-edition
+          - megasync-bin
+        flatpak-flathub:
+          - com.discordapp.Discord # Discord
+          - com.spotify.Client # Spotify
+          - io.podman_desktop.PodmanDesktop # Podman Desktop
+          - de.haeckerfelix.Fragments # Fragments
+
+    # Things needed for Displaylink driver
+    displaylink:
+      dependsOn: basics
+      packages:
+        pacman:
+          - linux-lts-headers
+        yay:
+          - evdi-dkms
+          - displaylink
+      scripts:
+        - setup-displaylink
+        - prompt-reboot
+
+    # Some things needed for Kubernetes development
+    k8s:
+      dependsOn: slim
+      packages:
+        pacman:
+          - kubectl
+          - minikube
+
+# All scripts - can be referenced with e.g. `script: install-yay`
+scripts:
+  install-yay:
+    exec: |
+      git clone https://aur.archlinux.org/yay.git
+      cd yay
+      makepkg -si
+      cd ..
+      rm -rf yay
+    shell: bash
+
+  setup-bluetooth:
+    exec: |
+      sudo systemctl start bluetooth.service
+      sudo systemctl enable bluetooth.service
+    shell: bash
+
+  setup-displaylink:
+    exec: |
+      sudo systemctl start displaylink.service
+      sudo systemctl enable displaylink.service
+    shell: bash
+
+  prompt-reboot:
+    exec: |
+      read -p "A reboot is required. Reboot now? [y/N] " answer
+      if [[ "$answer" =~ ^[Yy]$ ]]; then
+        echo "Rebooting..."
+        reboot
+      else
+        echo "Not rebooting. Have a great day :)"
+      fi
+    shell: bash
