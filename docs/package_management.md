@@ -21,6 +21,10 @@ to install.
 
 ### Config file `.badm.yaml`
 
+For a better DevEx writing the config file you can find the according **JSON schema
+mapping** [badm.schema.json](../badm.schema.json) in this repository which can be used in e.g. IntelliJ for e.g. type
+hints.
+
 ## Structure
 
 ### `packages`
